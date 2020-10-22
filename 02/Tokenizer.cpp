@@ -8,12 +8,12 @@ using namespace std;
 
 //typedef void(*tokenHandler) (string);
 
-using tokenHandler = function<void(string)>;
+using tokenHandler = function<void(const string&)>;
 
 class TokenParser
 {
 	tokenHandler startHandler, digitHandler, stringHandler, endHandler;
-	char* data;
+	string data;
 	size_t len;
 
 	enum parserState
@@ -23,15 +23,10 @@ class TokenParser
 
 
 	public:
-		TokenParser(const char* str, size_t size) 
+		TokenParser(const string& str) 
 		{
-			data = new char[size];
-			len = size;
-			
-			for (size_t i = 0; i < len; ++i)
-			{
-				data[i] = str[i];
-			}
+			len = str.size();
+			data = str;
 		}
 		
 		void SetStartCallback(tokenHandler t)
@@ -54,13 +49,7 @@ class TokenParser
 			endHandler = t;
 		}
 
-		~TokenParser()
-		{
-			delete[] data;
-		}
-
 		
-
 		void Parse()
 		{
 			startHandler("startParse ");
@@ -147,17 +136,17 @@ class TokenParser
 
 string result = "";
 
-void testHandler(string s)
+void testHandler(const string& s)
 {
 	result += s + "<!>";
 }
 
-void strHdlr(string s)
+void strHdlr(const string& s)
 {
 	result += "str<!>";
 }
 
-void digHdlr(string s)
+void digHdlr(const string& s)
 {
 	result += "dig<!>";
 }
@@ -168,51 +157,51 @@ void UnitTests()
 	string str2 = "         2             ";
 	string str3 = "a";
 
-	TokenParser parser1(str1.c_str(), str1.length());
+	TokenParser parser1(str1);
 	parser1.SetStartCallback(testHandler);
 	parser1.SetDigitTokenCallback(testHandler);
 	parser1.SetStringTokenCallback(testHandler);
 	parser1.SetEndCallback(testHandler);
 	parser1.Parse();
 	if (result == "startParse <!>123456789<!>12<!>asad<!>aAqw<!>20<!>a<!>2<!>endParse<!>")
-		cout << "SUCCES" << endl;
+		cout << "SUCCESS" << endl;
 	else
 		cout << "FAIL" << endl;
 
 	result = "";
-	TokenParser parser2(str2.c_str(), str2.length());
+	TokenParser parser2(str2);
 	parser2.SetStartCallback(testHandler);
 	parser2.SetDigitTokenCallback(testHandler);
 	parser2.SetStringTokenCallback(testHandler);
 	parser2.SetEndCallback(testHandler);
 	parser2.Parse();
 	if (result == "startParse <!>2<!>endParse<!>")
-		cout << "SUCCES" << endl;
+		cout << "SUCCESS" << endl;
 	else
 		cout << "FAIL" << endl;
 
 	result = "";
-	TokenParser parser3(str3.c_str(), str3.length());
+	TokenParser parser3(str3);
 	parser3.SetStartCallback(testHandler);
 	parser3.SetDigitTokenCallback(testHandler);
 	parser3.SetStringTokenCallback(testHandler);
 	parser3.SetEndCallback(testHandler);
 	parser3.Parse();
 	if (result == "startParse <!>a<!>endParse<!>")
-		cout << "SUCCES" << endl;
+		cout << "SUCCESS" << endl;
 	else
 		cout << "FAIL" << endl;
 
 	result = "";
 	string str4 = "aaa 666";
-	TokenParser parser4(str4.c_str(), str4.length());
+	TokenParser parser4(str4);
 	parser4.SetStartCallback(testHandler);
 	parser4.SetDigitTokenCallback(digHdlr);
 	parser4.SetStringTokenCallback(strHdlr);
 	parser4.SetEndCallback(testHandler);
 	parser4.Parse();
 	if (result == "startParse <!>str<!>dig<!>endParse<!>")
-		cout << "SUCCES" << endl;
+		cout << "SUCCESS" << endl;
 	else
 		cout << "FAIL" << endl;
 }
