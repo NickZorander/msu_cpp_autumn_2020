@@ -1,10 +1,14 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
+#include <functional>
+#include <cctype>
 
 
 using namespace std;
 
-typedef void(*tokenHandler) (string);
+//typedef void(*tokenHandler) (string);
+
+using tokenHandler = function<void(string)>;
 
 class TokenParser
 {
@@ -55,20 +59,7 @@ class TokenParser
 			delete[] data;
 		}
 
-		bool isDigit(char c)
-		{
-			return c >= '0' && c <= '9';
-		}
-
-		bool isSeparator(char c)
-		{
-			return c == '/n' || c == ' ' || c == '/t';
-		}
-
-		bool isLetter(char c)
-		{
-			return !isDigit(c) && !isSeparator(c);
-		}
+		
 
 		void Parse()
 		{
@@ -82,19 +73,19 @@ class TokenParser
 				char c = data[i];
 				if (state == separator)
 				{
-					if (isSeparator(c))
+					if (isspace(c))
 					{
 						continue;
 					}
 					
-					if (isDigit(c))
+					if (isdigit(c))
 					{
 						state = digitToken;
 						currentToken += c;
 						continue;
 					}
 
-					if (isLetter(c))
+					if (isalpha(c))
 					{
 						state = stringToken;
 						currentToken += c;
@@ -104,12 +95,12 @@ class TokenParser
 
 				if (state == digitToken)
 				{
-					if (isDigit(c))
+					if (isdigit(c))
 					{
 						currentToken += c;
 						continue;
 					}
-					else if (isSeparator(c))
+					else if (isspace(c))
 					{
 						digitHandler(currentToken);
 						currentToken = *new string();
@@ -120,12 +111,12 @@ class TokenParser
 
 				if (state == stringToken)
 				{
-					if (isLetter(c))
+					if (isalpha(c))
 					{
 						currentToken += c;
 						continue;
 					}
-					else if (isSeparator(c))
+					else if (isspace(c))
 					{
 						stringHandler(currentToken);
 						currentToken = *new string();
@@ -161,6 +152,16 @@ void testHandler(string s)
 	result += s + "<!>";
 }
 
+void strHdlr(string s)
+{
+	result += "str<!>";
+}
+
+void digHdlr(string s)
+{
+	result += "dig<!>";
+}
+
 void UnitTests()
 {
 	string str1 = "123456789 12 asad aAqw 20 a 2";
@@ -173,11 +174,10 @@ void UnitTests()
 	parser1.SetStringTokenCallback(testHandler);
 	parser1.SetEndCallback(testHandler);
 	parser1.Parse();
-
 	if (result == "startParse <!>123456789<!>12<!>asad<!>aAqw<!>20<!>a<!>2<!>endParse<!>")
 		cout << "SUCCES" << endl;
 	else
-		cout << "FAIL" << endl;;
+		cout << "FAIL" << endl;
 
 	result = "";
 	TokenParser parser2(str2.c_str(), str2.length());
@@ -186,11 +186,10 @@ void UnitTests()
 	parser2.SetStringTokenCallback(testHandler);
 	parser2.SetEndCallback(testHandler);
 	parser2.Parse();
-
 	if (result == "startParse <!>2<!>endParse<!>")
 		cout << "SUCCES" << endl;
 	else
-		cout << "FAIL" << endl;;
+		cout << "FAIL" << endl;
 
 	result = "";
 	TokenParser parser3(str3.c_str(), str3.length());
@@ -199,11 +198,23 @@ void UnitTests()
 	parser3.SetStringTokenCallback(testHandler);
 	parser3.SetEndCallback(testHandler);
 	parser3.Parse();
-
 	if (result == "startParse <!>a<!>endParse<!>")
 		cout << "SUCCES" << endl;
 	else
-		cout << "FAIL" << endl;;
+		cout << "FAIL" << endl;
+
+	result = "";
+	string str4 = "aaa 666";
+	TokenParser parser4(str4.c_str(), str4.length());
+	parser4.SetStartCallback(testHandler);
+	parser4.SetDigitTokenCallback(digHdlr);
+	parser4.SetStringTokenCallback(strHdlr);
+	parser4.SetEndCallback(testHandler);
+	parser4.Parse();
+	if (result == "startParse <!>str<!>dig<!>endParse<!>")
+		cout << "SUCCES" << endl;
+	else
+		cout << "FAIL" << endl;
 }
 
 
