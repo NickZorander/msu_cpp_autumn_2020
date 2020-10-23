@@ -177,7 +177,7 @@ void UnitTests()
 	parser1.SetEndCallback(testHandler);
 	parser1.Parse();
 
-	cout << result << endl;
+	//cout << result << endl;
 	if (result == "startParse<!>dig:123456789<!>dig:12<!>str:asad<!>str:aAqw<!>dig:20<!>str:a<!>dig:2<!>endParse<!>")
 		cout << "SUCCESS" << endl;
 	else
@@ -190,7 +190,7 @@ void UnitTests()
 	parser2.SetStringTokenCallback(strHdlr);
 	parser2.SetEndCallback(testHandler);
 	parser2.Parse();
-	cout << result << endl;
+	//cout << result << endl;
 	if (result == "startParse<!>dig:2<!>endParse<!>")
 		cout << "SUCCESS" << endl;
 	else
@@ -203,7 +203,7 @@ void UnitTests()
 	parser3.SetStringTokenCallback(strHdlr);
 	parser3.SetEndCallback(testHandler);
 	parser3.Parse();
-	cout << result << endl;
+	//cout << result << endl;
 	if (result == "startParse<!>str:a<!>endParse<!>")
 		cout << "SUCCESS" << endl;
 	else
@@ -217,7 +217,7 @@ void UnitTests()
 	parser4.SetStringTokenCallback(strHdlr);
 	parser4.SetEndCallback(testHandler);
 	parser4.Parse();
-	cout << result << endl;
+	//cout << result << endl;
 	if (result == "startParse<!>str:aaa<!>dig:666<!>endParse<!>")
 		cout << "SUCCESS" << endl;
 	else
@@ -225,15 +225,15 @@ void UnitTests()
 
 
 	result = "";
-	string str5 = "123aaa bbb16 3 z";
+	string str5 = "123aaa bbb16 333 zzzzz";
 	TokenParser parser5(str5);
 	parser5.SetStartCallback(testHandler);
 	parser5.SetDigitTokenCallback(digHdlr);
 	parser5.SetStringTokenCallback(strHdlr);
 	parser5.SetEndCallback(testHandler);
 	parser5.Parse();
-	cout << result << endl;
-	if (result == "startParse<!>str:123aaa<!>str:bbb16<!>dig:3<!>str:z<!>endParse<!>")
+	//cout << result << endl;
+	if (result == "startParse<!>str:123aaa<!>str:bbb16<!>dig:333<!>str:zzzzz<!>endParse<!>")
 		cout << "SUCCESS" << endl;
 	else
 		cout << "FAIL" << endl;
