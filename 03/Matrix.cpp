@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <iomanip>
 
@@ -47,15 +47,31 @@ public:
 		numCols = cols;
 
 		data = new int[rows*cols];
+	}
+
+	Matrix(const Matrix& m)
+	{
+		numRows = m.numRows;
+		numCols = m.numCols;
+
+		data = new int[numRows*numCols];
 
 		for (size_t i = 0; i < numCols; ++i)
 			for (size_t j = 0; j < numRows; ++j)
-				data[i*numCols + j] =  i==j? 1:0;
+				data[i*numCols + j] = m.data[i*numCols + j];
 	}
+
+	void fillValues()
+	{
+		for (size_t i = 0; i < numCols; ++i)
+			for (size_t j = 0; j < numRows; ++j)
+				data[i*numCols + j] = i == j ? 1 : 0;
+	}
+
 
 	~Matrix()
 	{
-		delete data;
+		delete[] data;
 	}
 
 	size_t getRows() const
@@ -80,15 +96,17 @@ public:
 		return const_cast<Proxy&>( static_cast<const Matrix&>(*this)[i]);
 	}
 
-	void operator*=(int x)
+	Matrix &operator*=(int x)
 	{
 		for (size_t i = 0; i < numRows*numCols; ++i)
 		{
 			data[i] *= x;
 		}
+
+		return *this;
 	}
 
-	bool operator==(const Matrix& m)
+	bool operator==(const Matrix& m) const
 	{
 		if (m.getRows() != numRows || m.getCols() != numCols)
 			throw std::out_of_range("");
@@ -105,7 +123,8 @@ public:
 		return true;
 	}
 
-	bool operator!=(const Matrix& m)
+
+	bool operator!=(const Matrix& m) const
 	{
 		if (m.getRows() != numRows || m.getCols() != numCols)
 			throw std::out_of_range("");
@@ -180,6 +199,10 @@ void TestMethod()
 {
 	Matrix m1(2, 2), m2(2, 2), m3(2, 2);
 
+	m1.fillValues();
+	m2.fillValues();
+	m3.fillValues();
+
 	m1[0][0] = 2;
 	assert(m1[0][0] == 2);
 	assert(m1.getCols() == 2);
@@ -193,7 +216,8 @@ void TestMethod()
 	cout << m3;
 	assert(m3[0][0] == 2 && m3[1][1] == 2 && m3[0][1] == 0 && m3[1][0] == 0);
 
-	assert(m1 == m2);
+	Matrix m4(m1);
+	assert(m1 == m4);
 	assert(!(m1 != m2));
 
 	try
